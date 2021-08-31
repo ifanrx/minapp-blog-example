@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
               <Text p>控制台</Text>
             </Link>
             <Spacer w="1" />
-            <Link href="https://cloud.minapp.com/dashboard/" underline>
+            <Link href="https://doc.minapp.com/" underline>
               <Text p>文档</Text>
             </Link>
           </Grid>
