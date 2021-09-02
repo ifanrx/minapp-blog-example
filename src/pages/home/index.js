@@ -1,8 +1,35 @@
+import React, { useState, useEffect } from 'react'
 import { Grid, Text, Link, Spacer } from '@geist-ui/react'
-import React from 'react'
+import { Plus } from '@geist-ui/react-icons'
+import BaaS from 'minapp-sdk'
 import Layout from '../../components/layout'
 
+const blogTable = new BaaS.TableObject('blogs')
+
 const Home = () => {
+  const [blogList, setBlogList] = useState({})
+
+  useEffect(() => {
+    const getBlogs = async () => {
+      // 获取文章数据
+      const res = await blogTable.find()
+      // 按类型分类
+      const list = res.data.objects.reduce((final, article) => {
+        if (!final[article.category]) {
+          final[article.category] = []
+        }
+
+        final[article.category].push(article)
+        return final
+      }, {})
+      setBlogList(list)
+    }
+
+    getBlogs()
+  }, [])
+
+  if (!Object.keys(blogList).length) return null
+
   return (
     <Layout>
       <section style={{ background: 'rgb(245, 245, 245)' }}>
@@ -25,81 +52,49 @@ const Home = () => {
 
       <section style={{ width: 1000, margin: '0 auto' }}>
         <Grid.Container direction="column">
-          <Grid xs="24" direction="column">
-            <Spacer h={5} />
-            <Text h4>🥗 技术文章</Text>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何快速实现图片爬虫
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                通过 React 构建个人博客教程
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                怎样快速生成海报，并在小程序中分享
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何生成带参数的二维码？
-              </Text>
-            </Link>
-          </Grid>
-          <Grid xs="24" direction="column">
-            <Spacer h={5} />
-            <Text h4>🍾 生活类文章</Text>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何快速实现图片爬虫
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                通过 React 构建个人博客教程
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                怎样快速生成海报，并在小程序中分享
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何生成带参数的二维码？
-              </Text>
-            </Link>
-          </Grid>
-          <Grid xs="24" direction="column">
-            <Spacer h={5} />
-            <Text h4>🚁 我的相册</Text>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何快速实现图片爬虫
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                通过 React 构建个人博客教程
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                怎样快速生成海报，并在小程序中分享
-              </Text>
-            </Link>
-            <Link href="/#/article/123" underline>
-              <Text h2 font="42px">
-                如何生成带参数的二维码？
-              </Text>
-            </Link>
-          </Grid>
+          {Object.keys(blogList).map(category => {
+            const articles = blogList[category]
+            return (
+              <Grid xs="24" direction="column" key={category}>
+                <Spacer h={5} />
+                <Text h4>{category}</Text>
+                {articles.map(article => (
+                  <Link
+                    href={`/#/article/${article.id}`}
+                    underline
+                    key={article.id}
+                  >
+                    <Text h2 font="42px">
+                      {article.title}
+                    </Text>
+                  </Link>
+                ))}
+              </Grid>
+            )
+          })}
         </Grid.Container>
         <Spacer h={5} />
       </section>
+
+      <Link
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'fixed',
+          bottom: 50,
+          right: 50,
+          width: 50,
+          height: 50,
+          color: '#fff',
+          background: 'blue',
+          borderRadius: '50%',
+          cursor: 'pointer',
+        }}
+        href="/#/article/new"
+      >
+        <Plus />
+      </Link>
     </Layout>
   )
 }
