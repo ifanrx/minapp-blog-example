@@ -44,12 +44,17 @@ const Article = () => {
 
       <article style={{ width: 1000, margin: '50px auto' }}>
         <Grid.Container direction="column">
-          <Grid xs="24" direction="column">
-            <Text p font="24px">
-              {article.content}
-            </Text>
-            <Spacer h={2} />
-          </Grid>
+          {article.content.split('　　').map((item, index) => {
+            console.log(item)
+            return (
+              <Grid xs="24" direction="column" key={index}>
+                <Text p font="24px">
+                  {item}
+                </Text>
+                <Spacer h={2} />
+              </Grid>
+            )
+          })}
         </Grid.Container>
       </article>
     </Layout>
