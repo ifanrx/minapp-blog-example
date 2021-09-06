@@ -2,6 +2,7 @@ import React from 'react'
 import { Grid, Spacer } from '@geist-ui/react'
 import Layout from '../../components/layout'
 import BlogHeader from '../../components/blog-header'
+import Comment from '../../components/comment'
 
 const Article = () => {
   const article =
@@ -25,6 +26,8 @@ const Article = () => {
         </Grid.Container>
         <Spacer h={5} />
       </article>
+
+      <Comment />
     </Layout>
   )
 }
