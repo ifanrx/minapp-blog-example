@@ -19,7 +19,7 @@ const Comment = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [toasts, setToast] = useToasts()
+  const [, setToast] = useToasts()
 
   /**
    * 关闭弹窗
