@@ -7,7 +7,6 @@ import {
   Text,
   Textarea,
   Button,
-  Link,
   Modal,
   Input,
   useToasts,
@@ -124,13 +123,13 @@ const Comment = () => {
           <Spacer w={1} />
           <Text p>
             你还没登录，请先
-            <Link
-              href="javascript: void(0);"
-              color
+            <Text
+              span
+              style={{ color: '#109cca', cursor: 'pointer' }}
               onClick={() => setShowModal(true)}
             >
               登录
-            </Link>
+            </Text>
             ，再评论
           </Text>
         </Grid>
