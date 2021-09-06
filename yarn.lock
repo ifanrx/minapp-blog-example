@@ -7230,6 +7230,11 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
+minapp-sdk@^3.21.1:
+  version "3.21.1"
+  resolved "https://registry.yarnpkg.com/minapp-sdk/-/minapp-sdk-3.21.1.tgz#bb6a29e793bfbc80da69e37b8d5ea50502e7ec1f"
+  integrity sha512-E5cr38vpGBAbFtGTt44yojoB2eQadDMgdpiGau48j3eGwA1oZb0TbU5Y4OTWS3oNd+kIdG8o2pfmVVS4z3yQsA==
+
 mini-create-react-context@^0.4.0:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/mini-create-react-context/-/mini-create-react-context-0.4.1.tgz#072171561bfdc922da08a60c2197a497cc2d1d5e"
