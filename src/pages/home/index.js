@@ -24,7 +24,7 @@ const getCategoryList = async () => {
 }
 
 const Home = () => {
-  const [articles, setArticles] = useState(null)
+  const [articles, setArticles] = useState()
 
   useEffect(() => {
     const getArticleList = async () => {
