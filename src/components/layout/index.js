@@ -1,5 +1,4 @@
 import { Grid, Text, Link, Spacer, Divider } from '@geist-ui/react'
-import { Github } from '@geist-ui/react-icons'
 
 const Layout = ({ children }) => {
   return (
@@ -24,10 +23,9 @@ const Layout = ({ children }) => {
             <Link href="https://doc.minapp.com/" underline>
               <Text p>文档</Text>
             </Link>
-          </Grid>
-          <Grid xs="6" justify="flex-end">
-            <Link href="https://github.com/ifanrx">
-              <Github />
+            <Spacer w="1" />
+            <Link href="https://github.com/ifanrx" underline>
+              <Text p>GitHub</Text>
             </Link>
           </Grid>
         </Grid.Container>
