@@ -116,8 +116,12 @@ const Comment = ({ id }) => {
 
   return (
     <div style={{ width: 1000, margin: '0 auto' }}>
-      <Text h3>评论</Text>
-      <Spacer h={1} />
+      {commentList.length ? (
+        <>
+          <Text h3>评论</Text>
+          <Spacer h={1} />
+        </>
+      ) : null}
       <Grid.Container direction="column">
         {commentList.map(comment => {
           return (
