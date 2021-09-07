@@ -1,5 +1,5 @@
 /* eslint-disable no-script-url */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Grid,
   Spacer,
@@ -11,27 +11,87 @@ import {
   Input,
   useToasts,
 } from '@geist-ui/react'
+import BaaS from 'minapp-sdk'
+import moment from 'moment'
 
-const Comment = () => {
+const CommentTable = new BaaS.TableObject('comment')
+
+const Comment = ({ id }) => {
   const [showModal, setShowModal] = useState(false)
   const [isRegister, setIsRegister] = useState(false)
+  const [currentUser, setCurrentUser] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [comment, setComment] = useState('')
+  const [commentList, setCommentList] = useState([])
 
   const [, setToast] = useToasts()
+
+  useEffect(() => {
+    getCurrentUser()
+    getCommentList(id)
+  }, [id])
+
+  /**
+   * 获取当前用户
+   */
+  const getCurrentUser = async () => {
+    try {
+      const user = await BaaS.auth.getCurrentUser()
+      setCurrentUser(user)
+    } catch (error) {
+      if (error.code === 604) {
+        console.log('用户未登录')
+      }
+    }
+  }
+
+  /**
+   * 获取评论列表
+   */
+  const getCommentList = async id => {
+    const query = new BaaS.Query()
+    query.compare('article', '=', id)
+    const res = await CommentTable.expand('created_by')
+      .orderBy(['-created_at'])
+      .setQuery(query)
+      .find()
+    setCommentList(res.data.objects)
+  }
 
   /**
    * 关闭弹窗
    */
-  const closeModal = event => {
+  const closeModal = () => {
     setShowModal(false)
-    console.log('closed')
+  }
+
+  /**
+   * 提交评论
+   */
+  const onCommentSubmit = async () => {
+    if (!comment) {
+      setToast({ text: '请输入评论', type: 'error' })
+      return
+    }
+
+    const commentRecord = CommentTable.create()
+
+    try {
+      await commentRecord.set({ comment, article: id }).save()
+      getCommentList(id) // 新增后，我们需要刷新一下评论列表
+      setComment('')
+    } catch (error) {
+      console.log('创建评论失败', error.toString())
+      setToast({ text: '创建评论失败', type: 'error' })
+      return
+    }
   }
 
   /**
    * 登录/注册弹窗提交
    */
-  const onAccountSubmit = () => {
+  const onAccountSubmit = async () => {
     if (!username) {
       setToast({ text: '请输入用户名', type: 'error' })
       return
@@ -42,7 +102,16 @@ const Comment = () => {
       return
     }
 
-    closeModal()
+    const request = isRegister ? BaaS.auth.register : BaaS.auth.login
+
+    try {
+      const user = await request({ username, password })
+      setCurrentUser(user)
+      closeModal()
+    } catch (error) {
+      console.log('登录/注册错误', error.toString())
+      setToast({ text: error.toString(), type: 'error' })
+    }
   }
 
   return (
@@ -50,67 +119,36 @@ const Comment = () => {
       <Text h3>评论</Text>
       <Spacer h={1} />
       <Grid.Container direction="column">
-        <Grid xs={24} direction="column">
-          <Card width="100%">
-            <div
-              style={{ display: 'flex', alignItems: 'center', marginTop: -20 }}
-            >
-              <Text p b font="20px">
-                小晓云
-              </Text>
-              <Spacer w={1} />
-              <Text p style={{ color: 'gray' }}>
-                2021/8/31 19:02:02
-              </Text>
-            </div>
+        {commentList.map(comment => {
+          return (
+            <Grid xs={24} direction="column" key={comment.id}>
+              <Card width="100%">
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginTop: -20,
+                  }}
+                >
+                  <Text p b font="20px">
+                    {comment.created_by._username}
+                  </Text>
+                  <Spacer w={1} />
+                  <Text p style={{ color: 'gray' }}>
+                    {moment
+                      .unix(comment.created_at)
+                      .format('YYYY年M月D日 HH:mm:ss')}
+                  </Text>
+                </div>
 
-            <Text p style={{ marginTop: -5 }}>
-              所以， 那么， 这样看来，
-              黑塞曾经说过，有勇气承担命运这才是英雄好汉。我希望诸位也能好好地体会这句话。
-            </Text>
-          </Card>
-          <Spacer h={1} />
-        </Grid>
-        <Grid xs={24} direction="column">
-          <Card width="100%">
-            <div
-              style={{ display: 'flex', alignItems: 'center', marginTop: -20 }}
-            >
-              <Text p b font="20px">
-                达文西
-              </Text>
-              <Spacer w={1} />
-              <Text p style={{ color: 'gray' }}>
-                2021/8/31 19:02:02
-              </Text>
-            </div>
-
-            <Text p style={{ marginTop: -5 }}>
-              黑塞曾经说过，有勇气承担命运这地体会这句话。
-            </Text>
-          </Card>
-          <Spacer h={1} />
-        </Grid>
-        <Grid xs={24} direction="column">
-          <Card width="100%">
-            <div
-              style={{ display: 'flex', alignItems: 'center', marginTop: -20 }}
-            >
-              <Text p b font="20px">
-                Lucy
-              </Text>
-              <Spacer w={1} />
-              <Text p style={{ color: 'gray' }}>
-                2021/8/31 19:02:02
-              </Text>
-            </div>
-
-            <Text p style={{ marginTop: -5 }}>
-              有勇气承担命运这才是英雄好汉。我希望诸位也能好好地体会这句话。
-            </Text>
-          </Card>
-          <Spacer h={1} />
-        </Grid>
+                <Text p style={{ marginTop: -5 }}>
+                  {comment.comment}
+                </Text>
+              </Card>
+              <Spacer h={1} />
+            </Grid>
+          )
+        })}
       </Grid.Container>
 
       <Spacer h={1} />
@@ -121,29 +159,38 @@ const Comment = () => {
             创建评论
           </Text>
           <Spacer w={1} />
-          <Text p>
-            你还没登录，请先
-            <Text
-              span
-              style={{ color: '#109cca', cursor: 'pointer' }}
-              onClick={() => setShowModal(true)}
-            >
-              登录
+          {!currentUser && (
+            <Text p>
+              你还没登录，请先
+              <Text
+                span
+                style={{ color: '#109cca', cursor: 'pointer' }}
+                onClick={() => setShowModal(true)}
+              >
+                登录
+              </Text>
+              ，再评论
             </Text>
-            ，再评论
-          </Text>
+          )}
         </Grid>
         <Grid xs={24} direction="column">
           <Textarea
-            disabled
+            disabled={!currentUser}
             placeholder="请输入评论..."
             width="100%"
             height="300px"
+            value={comment}
+            onChange={e => setComment(e.target.value)}
           />
         </Grid>
         <Spacer h={1} />
         <Grid xs={24}>
-          <Button disabled type="success-light" width="100%">
+          <Button
+            disabled={!currentUser}
+            type="success-light"
+            width="100%"
+            onClick={onCommentSubmit}
+          >
             提交
           </Button>
         </Grid>

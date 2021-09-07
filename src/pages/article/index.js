@@ -10,6 +10,10 @@ import Comment from '../../components/comment'
 const contentGroupId = 1630893238319930
 const contentGroup = new BaaS.ContentGroup(contentGroupId)
 
+/**
+ * 获取文章内容
+ * @param {*} id
+ */
 const getArticle = async id => {
   const res = await contentGroup.getContent(id)
   return res.data
@@ -51,7 +55,7 @@ const Article = () => {
         <Spacer h={5} />
       </article>
 
-      <Comment />
+      <Comment id={id} />
     </Layout>
   )
 }
