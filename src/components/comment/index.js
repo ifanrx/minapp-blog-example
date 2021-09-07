@@ -1,4 +1,3 @@
-/* eslint-disable no-script-url */
 import React, { useState, useEffect } from 'react'
 import {
   Grid,

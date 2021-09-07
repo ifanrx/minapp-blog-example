@@ -10,8 +10,11 @@ const contentGroup = new BaaS.ContentGroup(contentGroupId)
 /**
  * 获取内容库列表
  */
-const getContentGroupList = async () => {
-  const res = await contentGroup.find()
+const getContentGroupList = async categoryId => {
+  const query = new BaaS.Query()
+  query.arrayContains('categories', [categoryId])
+
+  const res = await contentGroup.setQuery(query).find()
   return res.data.objects
 }
 
@@ -28,25 +31,15 @@ const Home = () => {
 
   useEffect(() => {
     const getArticleList = async () => {
-      const contentGroupList = await getContentGroupList()
       const categoryList = await getCategoryList()
 
-      const articleList = categoryList.reduce((final, category) => {
+      const articleList = {}
+      for (const category of categoryList) {
         const { name, id } = category
+        const articles = await getContentGroupList(id)
 
-        for (const article of contentGroupList) {
-          const currentCategory = article.categories[0]
-          if (currentCategory !== id) continue
-
-          if (!final[name]) {
-            final[name] = []
-          }
-
-          final[name].push(article)
-        }
-
-        return final
-      }, {})
+        articleList[name] = articles
+      }
 
       setArticles(articleList)
     }
