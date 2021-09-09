@@ -134,7 +134,7 @@ const Comment = ({ id }) => {
                   }}
                 >
                   <Text p b font="20px">
-                    {comment.created_by._username}
+                    {comment.created_by._username || '匿名用户'}
                   </Text>
                   <Spacer w={1} />
                   <Text p style={{ color: 'gray' }}>
